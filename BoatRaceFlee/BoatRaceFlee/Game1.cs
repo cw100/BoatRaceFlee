@@ -1,5 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿
+using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace BoatRaceFlee
 {
@@ -10,23 +14,52 @@ namespace BoatRaceFlee
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+       
+        
+        
+        List<Vector2> SpawnList = new List<Vector2>();
+
+        List<Player> players;
+
+        int numOfPlayers = 4;
 
         public Game1()
         {
+            
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            graphics.PreferredBackBufferHeight = 1080;
+
+            graphics.PreferredBackBufferWidth = 1920;
+
+            
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
+        public void InitializePlayers(int numOfPlayers)
+        {
+            SpawnList.Add(new Vector2(2 + 150, 350));
+            SpawnList.Add(new Vector2(2 + 150, 850));
+            SpawnList.Add(new Vector2(1610 + 150, 850));
+            SpawnList.Add(new Vector2(1612 + 150, 400));
+            for (int i = 0; i < numOfPlayers; i++)
+            {
+                Player player;
+                PlayerIndex playerIndex;
+                playerIndex = (PlayerIndex)i;
+                player = new Player();
+                player.Initialize(SpawnList[i], playerIndex, 500);
+                players.Add(player);
+
+            }
+
+        }
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
 
+            players = new List<Player>();
+            InitializePlayers(numOfPlayers);
             base.Initialize();
         }
 
@@ -36,8 +69,15 @@ namespace BoatRaceFlee
         /// </summary>
         protected override void LoadContent()
         {
+
+
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            foreach (Player player in players)
+            {
+                player.LoadContent(Content, "Arrow");
+            }
 
             // TODO: use this.Content to load your game content here
         }
@@ -56,10 +96,13 @@ namespace BoatRaceFlee
         /// checking for collisions, gathering input, and playing audio.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
+       
         protected override void Update(GameTime gameTime)
         {
             // TODO: Add your update logic here
-
+            
+           foreach (Player player in players)
+                player.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -70,9 +113,26 @@ namespace BoatRaceFlee
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            Texture2D rectangleTexture = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
 
+            Color[] color = new Color[1 * 1];
+            for (int i = 0; i < color.Length; i++)
+            {
+                color[i] = Color.White;
+            }
+            rectangleTexture.SetData(color);
+
+            spriteBatch.Begin();
             // TODO: Add your drawing code here
+            foreach (Player player in players)
+            {
+                spriteBatch.Draw(rectangleTexture, player.hitBox, Color.Green);
 
+
+                player.Draw(spriteBatch);
+            }
+
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
