@@ -124,6 +124,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Button.cs" />
     <Compile Include="Collision.cs" />
     <Compile Include="GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
@@ -142,7 +143,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Aircraft.png" />
     <Content Include="Content\Arrow.png" />
+    <Content Include="Content\BattleShip.png" />
+    <Content Include="Content\BeachRing.png" />
+    <Content Include="Content\ExitButton.png" />
+    <Content Include="Content\Longboat.png" />
+    <Content Include="Content\PlayButton.png" />
     <Content Include="Content\Rock.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

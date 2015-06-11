@@ -15,15 +15,18 @@ namespace BoatRaceFlee
         Vector2 velocity;
         public Animation obstacleAnimation;
         Texture2D obstacleTexture;
-        Rectangle hitBox;
+        public Rectangle hitBox;
         bool active=true;
-        
+        public float angle;
+
         public void Initialize(Vector2 startposition, Vector2 startvel, Animation obstacleanimation)
         {
             position = startposition;
             velocity = startvel;
             obstacleAnimation = obstacleanimation;
-            obstacleAnimation.Initialize(1, 1, position, 0, Color.White);
+            obstacleAnimation.Initialize(1, 1, position, angle, Color.White);
+            hitBox = new Rectangle((int)position.X - obstacleAnimation.frameWidth / 2, (int)position.Y - obstacleAnimation.frameHeight / 2, obstacleAnimation.frameWidth, obstacleAnimation.frameHeight);
+
         }
         public Matrix obstacleTransformation;
         public void Update(GameTime gameTime)
@@ -34,6 +37,8 @@ namespace BoatRaceFlee
 
             obstacleAnimation.Update(gameTime);
 
+            hitBox.Y = (int)position.Y - obstacleAnimation.frameHeight / 2;
+            hitBox.X = (int)position.X - obstacleAnimation.frameWidth / 2;
             obstacleTransformation =
                     Matrix.CreateTranslation(new Vector3(-obstacleAnimation.origin, 0.0f)) *
                     Matrix.CreateScale(obstacleAnimation.scale) *

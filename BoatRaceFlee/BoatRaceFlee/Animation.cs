@@ -23,7 +23,7 @@ namespace BoatRaceFlee
         public Vector2 position;
         public Vector2 origin;
         Rectangle source;
-        float angle;
+        public float angle;
         public Color color;
         public bool isPaused = false;
 

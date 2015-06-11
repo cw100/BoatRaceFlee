@@ -7,14 +7,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace BoatRaceFlee
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
+    
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        MouseState mouseState;
         Random randomizer;
         
         List<Vector2> SpawnList = new List<Vector2>();
@@ -22,10 +20,19 @@ namespace BoatRaceFlee
         List<Player> players;
         
         int numOfPlayers = 4;
+        enum GameScreen
+        {
+            MainMenu,
+            SelectScreen,
+            GameRunning,
+            GameOver
 
+        }
+        GameScreen gameState = GameScreen.MainMenu;
         public Game1()
         {
-            
+
+            IsMouseVisible = true;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
@@ -34,6 +41,71 @@ namespace BoatRaceFlee
             graphics.PreferredBackBufferWidth = 1920;
 
             
+        }
+        List<Texture2D> playerIcons;
+        Texture2D beachRing;
+        Texture2D longBoat;
+        Texture2D airCarrier;
+        Texture2D battleShip;
+        public void InitializeSelectScreen()
+        {
+
+            beachRing = Content.Load<Texture2D>("BeachRing");
+            longBoat = Content.Load<Texture2D>("Longboat");
+            airCarrier = Content.Load<Texture2D>("Aircraft");
+            battleShip = Content.Load<Texture2D>("BattleShip");
+            playerIcons = new List<Texture2D>();
+            
+
+            playerIcons.Add(beachRing);
+            playerIcons.Add(longBoat);
+            playerIcons.Add(airCarrier);
+            playerIcons.Add(playerIcons);
+
+
+        }
+        public void UpdateSelectScreen(GameTime gameTime)
+        {
+
+
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (!players[i].ready)
+                {
+                    PlayerSelect(gameTime, i);
+                }
+                if (GamePad.GetState((PlayerIndex)i).Buttons.A == ButtonState.Pressed && !players[i].ready)
+                {
+                    players[i].ready = true;
+                    readyPlayers += 1;
+                }
+                if (GamePad.GetState((PlayerIndex)i).Buttons.B == ButtonState.Pressed && players[i].ready)
+                {
+                    players[i].ready = false;
+                    readyPlayers -= 1;
+                }
+            }
+            if (readyPlayers == 4)
+            {
+                currentGameScreen = GameScreen.GameRunning;
+            }
+
+
+
+        }
+        public void DrawIcons(SpriteBatch spriteBatch)
+        {
+            for (int i = 0; i < players.Count; i++)
+            {
+                if (!players[i].ready)
+                {
+                    spriteBatch.Draw(playerIcons[players[i].playerSelected], new Vector2((1920 - 150) / 2, 300 + 100 * i), Color.White);
+                }
+                else
+                {
+                    spriteBatch.Draw(playerIcons[players[i].playerSelected], new Vector2(100 + (1920 - 150) / 2, 300 + 100 * i), Color.White);
+                }
+            }
         }
 
         public void InitializePlayers(int numOfPlayers)
@@ -54,86 +126,171 @@ namespace BoatRaceFlee
             }
 
         }
+        int VirtualScreenWidth = 1920;
+        int VirtualScreenHeight = 1080;
+        Vector3 screenScale;
+
+        int currentMenuItem = 1;
+        public void InitializeGame()
+        {
+            float scaleX = (float)GraphicsDevice.Viewport.Width / (float)VirtualScreenWidth;
+            float scaleY = (float)GraphicsDevice.Viewport.Height / (float)VirtualScreenHeight;
+
+            screenScale = new Vector3(scaleX, scaleY, 1.0f);
+            mouseState = new MouseState();
+            players = new List<Player>();
+            InitializePlayers(numOfPlayers);
+        }
+        List<Button> menuButtons;
+        public void InitializeMainMenu()
+        {
+            menuButtons = new List<Button>();
+            
+            Button button = new Button();
+            button.Initialize(new Vector2((1920) / 2, 500 + 140 / 2), "PlayButton", "play", 1);
+            menuButtons.Add(button);
+            
+            button = new Button();
+            button.Initialize(new Vector2((1920) / 2, 700 + 140 / 2), "ExitButton", "exit", 2);
+            menuButtons.Add(button);
+        }
+        int menuTime = 1000;
+        public void MenuSelect(GameTime gameTime, PlayerIndex num)
+        {
+            if (1 <= currentMenuItem && currentMenuItem <= menuButtons.Count)
+            {
+
+                
+                   
+                        currentMenuItem -= (int)(GamePad.GetState(num).ThumbSticks.Left.Y*10);
+                        elapsedTime = 0;
+                    
+                
+
+            }
+
+
+            if (1 > currentMenuItem)
+            {
+                currentMenuItem = 1;
+            }
+            if (currentMenuItem > menuButtons.Count)
+            {
+                currentMenuItem = menuButtons.Count;
+            }
+        }
+        public void UpdateMenu(GameTime gameTime)
+        {
+            MenuSelect(gameTime, PlayerIndex.One);
+            foreach (Button button in menuButtons)
+            {
+                button.Update(gameTime, mouseState, currentMenuItem);
+                if (button.CheckForClick(mouseState))
+                {
+
+                    if (button.buttonName == "play")
+                    {
+                        gameState = GameScreen.GameRunning;
+                    }
+                    if (button.buttonName == "exit")
+                    {
+                        Exit();
+                    }
+                }
+            }
+
+        }
+        public void DrawMenu(GameTime gameTime)
+        {
+           // spriteBatch.Draw(MenuBackground, new Vector2(0, 0), Color.White);
+            foreach (Button button in menuButtons)
+
+            {
+                button.Draw(spriteBatch);
+            }
+
+        }
+
         Animation obstacleAnimation =  new Animation();
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             randomizer = new Random();
-            players = new List<Player>();
-            InitializePlayers(numOfPlayers);
+            InitializeMainMenu();
+
+            InitializeGame();
+                    
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
+       
         protected override void LoadContent()
         {
 
-
-            // Create a new SpriteBatch, which can be used to draw textures.
+            
             spriteBatch = new SpriteBatch(GraphicsDevice);
             
             foreach (Player player in players)
             {
                 player.LoadContent(Content, "Arrow");
             }
+            foreach (Button button in menuButtons)
+            {
+                button.LoadContent(Content, button.fileName);
+            }
 
-            // TODO: use this.Content to load your game content here
+
         }
 
         List<Obstacle> obstacleList = new List<Obstacle>();
 
         public void AddRock()
         {
-            Obstacle obstacle = new Obstacle();
-            obstacleAnimation = new Animation();
-            Vector2 pos = new Vector2(1920, randomizer.Next(0, 1080));
-            obstacleAnimation.LoadContent(Content, "Rock");
-           
+            for (int k = 0; k < randomizer.Next(1, 5); k++)
+            {
+                Obstacle obstacle = new Obstacle();
+                obstacleAnimation = new Animation();
+                
+                obstacleAnimation.LoadContent(Content, "Rock");
+                Vector2 pos = new Vector2(1920 + obstacleAnimation.frameWidth, randomizer.Next(obstacleAnimation.frameHeight, 1080- obstacleAnimation.frameHeight));
+                obstacle.angle = (float)randomizer.Next(0, 180);
                 obstacle.Initialize(pos, new Vector2(300f, 0), obstacleAnimation);
-            
-            obstacleList.Add(obstacle);
+
+                obstacleList.Add(obstacle);
+            }
         }
         public void RockCollision()
         {
-            for (int i = 0; i < players.Count; i++)
-            {
-                for (int j = 0; j < obstacleList.Count; j++)
+            
+                for (int i = 0; i < players.Count; i++)
                 {
-                    if (Collision.CollidesWith(players[i].playerAnimation,
-                    obstacleList[j].obstacleAnimation, players[i].playerTransformation,
-                    obstacleList[j].obstacleTransformation))
-
+                    for (int j = 0; j < obstacleList.Count; j++)
                     {
+                        if (players[i].hitBox.Intersects(obstacleList[j].hitBox))
+                        {
+                            if (Collision.CollidesWith(players[i].playerAnimation,
+                            obstacleList[j].obstacleAnimation, players[i].playerTransformation,
+                            obstacleList[j].obstacleTransformation))
+
+                            {
 
 
-                        players[i].active = false;
+                                players[i].active = false;
+                            }
+                        }
                     }
                 }
-            }
+            
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
+      
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        
         float elapsedTime;
-        float rockTime=1000;
-        protected override void Update(GameTime gameTime)
+        float rockTime=2000;
+        public void UpdateGame(GameTime gameTime)
         {
-            // TODO: Add your update logic here
             elapsedTime += gameTime.ElapsedGameTime.Milliseconds;
             if (elapsedTime > rockTime)
             {
@@ -145,19 +302,37 @@ namespace BoatRaceFlee
                 rock.Update(gameTime);
             }
             RockCollision();
-
-
-
-
-           foreach (Player player in players)
+            foreach (Player player in players)
                 player.Update(gameTime);
+        }
+        protected override void Update(GameTime gameTime)
+        {
+
+
+            mouseState = Mouse.GetState();
+            //if (gameState == GameScreen.SelectScreen)
+            //{
+            //    UpdateSelectScreen(gameTime);
+            //}
+            if (gameState == GameScreen.GameRunning)
+            {
+                UpdateGame(gameTime);
+            }
+            if (gameState == GameScreen.MainMenu)
+            {
+                UpdateMenu(gameTime);
+            }
+            //if (gameState == GameScreen.GameOver)
+            //{
+            //    UpdateGameOverScreen();
+            //}
+
+
+            
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -171,22 +346,27 @@ namespace BoatRaceFlee
             rectangleTexture.SetData(color);
 
             spriteBatch.Begin();
-            foreach (Obstacle rock in obstacleList)
+            if (gameState == GameScreen.MainMenu)
             {
-                rock.Draw(spriteBatch);
-
+                DrawMenu(gameTime);
             }
-            // TODO: Add your drawing code here
-            foreach (Player player in players)
+                if (gameState == GameScreen.GameRunning)
             {
-                
+                foreach (Obstacle rock in obstacleList)
+                {
+                    rock.Draw(spriteBatch);
 
-                spriteBatch.Draw(rectangleTexture, player.hitBox, Color.Green);
+                }
+                foreach (Player player in players)
+                {
 
 
-                player.Draw(spriteBatch);
+                    spriteBatch.Draw(rectangleTexture, player.hitBox, Color.Green);
+
+
+                    player.Draw(spriteBatch);
+                }
             }
-
             spriteBatch.End();
             base.Draw(gameTime);
         }
