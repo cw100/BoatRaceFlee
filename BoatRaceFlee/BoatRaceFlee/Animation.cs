@@ -15,18 +15,24 @@ namespace BoatRaceFlee
         public SpriteEffects flip;
         public Texture2D spriteSheet;
         float time;
-        float frameTime;
+        float frameTime=1;
         public int frameIndex;
-        int totalFrames;
+        int totalFrames=1;
         public int frameHeight;
         public int frameWidth;
         public Vector2 position;
-        Vector2 origin;
+        public Vector2 origin;
         Rectangle source;
         float angle;
         public Color color;
         public bool isPaused = false;
 
+        public Color[] colorData;
+        public void collisionData()
+        {
+            colorData = new Color[frameWidth * frameHeight];
+            spriteSheet.GetData<Color>(0, source, colorData, 0, frameWidth * frameHeight);
+        }
         public void LoadContent(ContentManager theContentManager, string textureName)
         {
 
@@ -34,6 +40,7 @@ namespace BoatRaceFlee
 
             frameHeight = spriteSheet.Height;
             frameWidth = spriteSheet.Width / totalFrames;
+            collisionData();
 
         }
         public void Initialize(int totalframes, float animationlength, Vector2 startposition, float startangle, Color startcolor)

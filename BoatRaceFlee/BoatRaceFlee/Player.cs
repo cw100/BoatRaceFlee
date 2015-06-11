@@ -18,9 +18,9 @@ namespace BoatRaceFlee
        
         int health;
        public Animation playerAnimation;
-        bool active;
+      public  bool active;
         public Rectangle hitBox;
-
+        public Matrix playerTransformation;
         public PlayerIndex playerNumber;
 
         public void LoadContent(ContentManager theContentManager, string textureName)
@@ -72,6 +72,10 @@ namespace BoatRaceFlee
             hitBox.X = (int)position.X - playerAnimation.frameWidth / 2;
             playerAnimation.position = position;
             playerAnimation.Update(gameTime);
+            playerTransformation =
+                    Matrix.CreateTranslation(new Vector3(-playerAnimation.origin, 0.0f)) *
+                    Matrix.CreateScale(playerAnimation.scale) *
+                    Matrix.CreateTranslation(new Vector3(playerAnimation.position, 0.0f));
         }
         public void Draw(SpriteBatch spriteBatch)
         {

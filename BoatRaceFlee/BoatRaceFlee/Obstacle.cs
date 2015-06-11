@@ -13,34 +13,38 @@ namespace BoatRaceFlee
 
         Vector2 position;
         Vector2 velocity;
-        Animation obstacleAnimation;
+        public Animation obstacleAnimation;
+        Texture2D obstacleTexture;
         Rectangle hitBox;
-        bool active
-        public void LoadContent(ContentManager theContentManager, string textureName)
+        bool active=true;
+        
+        public void Initialize(Vector2 startposition, Vector2 startvel, Animation obstacleanimation)
         {
-            obstacleAnimation.LoadContent(theContentManager, textureName);
-            hitBox = new Rectangle((int)position.X - obstacleAnimation.frameWidth / 2, (int)position.Y - obstacleAnimation.frameHeight / 2, obstacleAnimation.frameWidth, obstacleAnimation.frameHeight);
-
-        }
-
-        public void Initialize(Vector2 startposition, Vector2 startvel)
-        {
+            position = startposition;
             velocity = startvel;
-            obstacleAnimation.Initialize(1, 1, startposition, 0f, Color.White);
-
+            obstacleAnimation = obstacleanimation;
+            obstacleAnimation.Initialize(1, 1, position, 0, Color.White);
         }
+        public Matrix obstacleTransformation;
         public void Update(GameTime gameTime)
         {
-            position += velocity;
+            position -= velocity* (float)gameTime.ElapsedGameTime.TotalSeconds;
+           
             obstacleAnimation.position = position;
+
+            obstacleAnimation.Update(gameTime);
+
+            obstacleTransformation =
+                    Matrix.CreateTranslation(new Vector3(-obstacleAnimation.origin, 0.0f)) *
+                    Matrix.CreateScale(obstacleAnimation.scale) *
+                    Matrix.CreateTranslation(new Vector3(obstacleAnimation.position, 0.0f));
+
         }
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch) 
         {
             if (active)
             {
-
                 obstacleAnimation.Draw(spriteBatch);
-
             }
         }
 
