@@ -262,7 +262,17 @@ namespace BoatRaceFlee
             riverPosTwo = new Vector2(1600, 0);
 
             riverPosThree = new Vector2(3200, 0);
+            riverbankPos= new Vector2(0, 0);
+            riverbankPosTwo= new Vector2(3720, 0);
+
+            riverbankPosThree = new Vector2(0, 1080 - 85);
+            riverbankPosFour = new Vector2(3720, 1080-85);
             randomizer = new Random();
+            riverBankOne = new Animation();
+            riverBankTwo = new Animation();
+            riverBankThree = new Animation();
+            riverBankFour = new Animation();
+
             InitializeSelectScreen();
             InitializeMainMenu();
 
@@ -291,6 +301,13 @@ namespace BoatRaceFlee
             explosionTex = Content.Load<Texture2D>("explosion");
             river = Content.Load<Texture2D>("river");
             riverTwo = Content.Load<Texture2D>("river");
+
+            riverBankThree.LoadContent(Content, "riverBank");
+            riverBankFour.LoadContent(Content, "riverBank");
+
+            riverBankOne.LoadContent(Content, "riverBank2");
+            riverBankTwo.LoadContent(Content, "riverBank2");
+
             riverThree = Content.Load<Texture2D>("river");
             foreach (Player player in players)
             {
@@ -322,6 +339,7 @@ namespace BoatRaceFlee
                 obstacleList.Add(obstacle);
             }
         }
+        Animation riverBankOne, riverBankTwo, riverBankThree, riverBankFour;
         public void RockCollision()
         {
             
@@ -355,6 +373,8 @@ namespace BoatRaceFlee
         float rockTime=2000;
         public void UpdateGame(GameTime gameTime)
         {
+            rockTime = randomizer.Next(1000, 2500);
+
             elapsedTime += gameTime.ElapsedGameTime.Milliseconds;
             if (elapsedTime > rockTime)
             {
@@ -376,6 +396,10 @@ namespace BoatRaceFlee
         Vector2 riverPosTwo;
         Vector2 riverPosThree;
         Vector2 riverSpeed = new Vector2(500, 0);
+        Vector2 riverbankPos;
+        Vector2 riverbankPosTwo;
+        Vector2 riverbankPosThree;
+        Vector2 riverbankPosFour;
         static public Texture2D particleWake;
         protected override void Update(GameTime gameTime)
         {
@@ -383,7 +407,12 @@ namespace BoatRaceFlee
             riverPos -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             riverPosTwo -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             riverPosThree -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if(riverPos.X<-1600)
+            riverbankPos -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            riverbankPosTwo -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            riverbankPosThree -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            riverbankPosFour -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+           
+            if (riverPos.X<-1600)
             {
                 riverPos.X = 3200;
             }
@@ -395,7 +424,30 @@ namespace BoatRaceFlee
             {
                 riverPosThree.X = 3200;
             }
-
+            if (riverbankPos.X < -3720)
+            {
+                riverbankPos.X = 3720;
+            }
+            if (riverbankPosTwo.X < -3720)
+            {
+                riverbankPosTwo.X = 3720;
+            }
+            if (riverbankPosThree.X < -3720)
+            {
+                riverbankPosThree.X = 3720;
+            }
+            if (riverbankPosFour.X < -3720)
+            {
+                riverbankPosFour.X = 3720;
+            }
+            riverBankOne.position = riverbankPos;
+            riverBankOne.Update(gameTime);
+            riverBankTwo.position = riverbankPosTwo;
+            riverBankTwo.Update(gameTime);
+            riverBankThree.position = riverbankPosThree;
+            riverBankThree.Update(gameTime);
+            riverBankFour.position = riverbankPosThree;
+            riverBankFour.Update(gameTime);
             mouseState = Mouse.GetState();
             if (gameState == GameScreen.SelectScreen)
             {
@@ -508,6 +560,9 @@ namespace BoatRaceFlee
             spriteBatch.Draw(riverTwo, riverPosTwo, Color.White);
 
             spriteBatch.Draw(riverThree, riverPosThree, Color.White);
+
+            riverBankOne.Draw(spriteBatch);
+
             if (gameState == GameScreen.SelectScreen)
             {
                 DrawIcons(spriteBatch);

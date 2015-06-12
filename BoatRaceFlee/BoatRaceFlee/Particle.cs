@@ -39,8 +39,8 @@ namespace BoatRaceFlee
             {
                 angle = ang;
                 particleColor.A = (Byte)(255 - ((255 / ttl) * timeAlive));
-                position += velocity * gameTime.ElapsedGameTime.Seconds;
-                timeAlive += gameTime.ElapsedGameTime.Seconds;
+                position += velocity * gameTime.ElapsedGameTime.Milliseconds;
+                timeAlive += gameTime.ElapsedGameTime.Milliseconds;
                 scale = 1 - ( timeAlive / ttl);
                 if (timeAlive > ttl)
                 {

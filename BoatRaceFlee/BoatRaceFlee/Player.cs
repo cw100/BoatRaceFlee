@@ -114,7 +114,7 @@ namespace BoatRaceFlee
         {
 
             Emiter emiter = new Emiter();
-            emiter.Initialize(particle, 1, pos , Color.White, new Vector2(-direction.X, direction.Y), 300, angle);
+            emiter.Initialize(particle, 1000, pos , Color.LightBlue, new Vector2(-direction.X, direction.Y)*10, 10, angle);
 
             emiters.Add(emiter);
 
@@ -124,7 +124,7 @@ namespace BoatRaceFlee
             for (int i = 0; i < emiters.Count; i++)
             {
 
-                emiters[i].Update(gameTime, position, angle);
+                emiters[i].Update(gameTime, position, angle, new Vector2(-direction.X, -direction.Y)/10 );
 
             }
         }

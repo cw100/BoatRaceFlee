@@ -159,6 +159,8 @@
     <Content Include="Content\playerThreeWins.png" />
     <Content Include="Content\playerTwoWins.png" />
     <Content Include="Content\River.png" />
+    <Content Include="Content\riverBank.png" />
+    <Content Include="Content\riverBank2.png" />
     <Content Include="Content\Rock.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

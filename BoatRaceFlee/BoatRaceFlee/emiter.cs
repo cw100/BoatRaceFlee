@@ -53,8 +53,9 @@ namespace BoatRaceFlee
                 }
             }
         }
-        public void Update(GameTime gameTime, Vector2 newPostition, float angle)
+        public void Update(GameTime gameTime, Vector2 newPostition, float angle, Vector2 vel)
         {
+            velocity = vel;
             position = newPostition;
             if (currentParticles < maxParticles)
             {
