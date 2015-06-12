@@ -31,16 +31,18 @@ namespace BoatRaceFlee
 
         }
 
-        public void Initialize(Vector2 startposition,PlayerIndex playernumber, float playerspeed)
+        public void Initialize(Vector2 startposition,PlayerIndex playernumber, float playerspeed, Texture2D wake)
         {
+            emiters = new List<Emiter>();
             mass = 100;
-
+            particle = wake;
             position = startposition;
             playerSpeed = playerspeed;
             playerNumber = playernumber;
             active = true;
             playerAnimation = new Animation();
             playerAnimation.Initialize(4, 1, startposition, 0f, Color.White,true);
+            AddEmiters(startposition);
             }
         public void ScreenCollision()
         {
@@ -106,7 +108,36 @@ namespace BoatRaceFlee
         {
             velocity *= 0.2f* (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
+        List<Emiter> emiters;
+        Texture2D particle;
+        public void AddEmiters(Vector2 pos)
+        {
 
+            Emiter emiter = new Emiter();
+            emiter.Initialize(particle, 1, pos , Color.White, new Vector2(-direction.X, direction.Y), 300, angle);
+
+            emiters.Add(emiter);
+
+        }
+        public void UpdateEmiters(GameTime gameTime)
+        {
+            for (int i = 0; i < emiters.Count; i++)
+            {
+
+                emiters[i].Update(gameTime, position, angle);
+
+            }
+        }
+        public void DrawEmiters(SpriteBatch spriteBatch)
+        {
+            foreach (Emiter emiter in emiters)
+            {
+                emiter.Draw(spriteBatch);
+
+            }
+
+        }
+        Vector2 direction;
         public void Update(GameTime gameTime)
         {
             if (active)
@@ -114,7 +145,7 @@ namespace BoatRaceFlee
                 playerAnimation.frameIndex = playerSelected;
                 Rotate();
                 ControllerMove(gameTime);
-                Vector2 direction = new Vector2((float)Math.Cos(angle),
+                 direction = new Vector2((float)Math.Cos(angle),
                                        (float)Math.Sin(angle));
                 direction.Normalize();
                 position += direction * 200 * (float)gameTime.ElapsedGameTime.TotalSeconds - new Vector2(100 * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
@@ -131,6 +162,8 @@ namespace BoatRaceFlee
                         Matrix.CreateTranslation(new Vector3(-playerAnimation.origin, 0.0f)) *
                         Matrix.CreateScale(playerAnimation.scale) *
                         Matrix.CreateTranslation(new Vector3(playerAnimation.position, 0.0f));
+                UpdateEmiters(gameTime);
+
                 if (health <= 0)
                 {
                     Game1.AddExplosion(position, 4f);
@@ -143,7 +176,7 @@ namespace BoatRaceFlee
         {
             if (active)
             {
-
+                DrawEmiters(spriteBatch);
                 playerAnimation.Draw(spriteBatch);
 
             }

@@ -126,6 +126,7 @@
     </Compile>
     <Compile Include="Button.cs" />
     <Compile Include="Collision.cs" />
+    <Compile Include="Emiter.cs" />
     <Compile Include="GamePage.xaml.cs">
       <DependentUpon>GamePage.xaml</DependentUpon>
     </Compile>
@@ -161,6 +162,7 @@
     <Content Include="Content\Rock.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\wake.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\Logo.scale-100.png" />
     <Content Include="Assets\SmallLogo.scale-100.png" />

@@ -28,7 +28,7 @@ namespace BoatRaceFlee
             GameOver
 
         }
-        GameScreen gameState = GameScreen.MainMenu;
+        GameScreen gameState = GameScreen.GameRunning;
         public Game1()
         {
 
@@ -149,7 +149,9 @@ namespace BoatRaceFlee
                 PlayerIndex playerIndex;
                 playerIndex = (PlayerIndex)i;
                 player = new Player();
-                player.Initialize(SpawnList[i], playerIndex, 500);
+
+                particleWake = Content.Load<Texture2D>("wake");
+                player.Initialize(SpawnList[i], playerIndex, 500,particleWake);
                 players.Add(player);
 
             }
@@ -374,6 +376,7 @@ namespace BoatRaceFlee
         Vector2 riverPosTwo;
         Vector2 riverPosThree;
         Vector2 riverSpeed = new Vector2(500, 0);
+        static public Texture2D particleWake;
         protected override void Update(GameTime gameTime)
         {
 
