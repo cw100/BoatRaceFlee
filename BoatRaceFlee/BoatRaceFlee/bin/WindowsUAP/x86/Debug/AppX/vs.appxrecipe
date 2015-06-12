@@ -20,7 +20,7 @@
     <AppXManifest Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2015-06-12T07:50:21.375</Modified>
+      <Modified>2015-06-12T08:11:33.157</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
@@ -74,7 +74,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\BoatRaceFlee.exe">
       <PackagePath>BoatRaceFlee.exe</PackagePath>
-      <Modified>2015-06-12T07:49:30.286</Modified>
+      <Modified>2015-06-12T08:11:32.955</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\BoatRaceFlee.xr.xml">
       <PackagePath>BoatRaceFlee.xr.xml</PackagePath>
@@ -226,7 +226,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2015-06-12T07:50:21.902</Modified>
+      <Modified>2015-06-12T08:11:33.676</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\SharpDX.Direct2D1.dll">
       <PackagePath>SharpDX.Direct2D1.dll</PackagePath>

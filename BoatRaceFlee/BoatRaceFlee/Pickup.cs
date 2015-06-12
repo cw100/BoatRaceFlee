@@ -48,8 +48,8 @@ namespace BoatRaceFlee
             {
             
             position -= velocity*(float)gameTime.ElapsedGameTime.TotalSeconds;
-                hitBox.X = (int)position.X;
-                hitBox.Y = (int)position.Y;
+                hitBox.X = (int)position.X - pickupAnimation.frameWidth / 2; ;
+                hitBox.Y = (int)position.Y - pickupAnimation.frameHeight / 2; ;
                 pickupAnimation.position = position;
                 pickupAnimation.Update(gameTime);
         }

@@ -877,6 +877,7 @@ namespace BoatRaceFlee
             {
                 foreach (Pickup pickup in pickups)
                 {
+                    //spriteBatch.Draw(rectangleTexture, pickup.hitBox, Color.Green);
                     pickup.Draw(spriteBatch);
 
                 }
