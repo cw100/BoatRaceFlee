@@ -61,6 +61,15 @@
     <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\ClrCompression.dll">
       <PackagePath>ClrCompression.dll</PackagePath>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\Content\2.png">
+      <PackagePath>Content\2.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\Content\3.png">
+      <PackagePath>Content\3.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\Content\4.png">
+      <PackagePath>Content\4.png</PackagePath>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\Content\Aircraft.png">
       <PackagePath>Content\Aircraft.png</PackagePath>
     </AppxPackagedFile>
@@ -75,6 +84,9 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\Content\Boats.png">
       <PackagePath>Content\Boats.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\Content\Duck.png">
+      <PackagePath>Content\Duck.png</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\gamejam\Documents\GitHub\BoatRaceFlee\BoatRaceFlee\BoatRaceFlee\bin\WindowsUAP\x86\Debug\Core\Content\EasyButton.png">
       <PackagePath>Content\EasyButton.png</PackagePath>

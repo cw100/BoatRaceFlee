@@ -34,9 +34,6 @@ namespace BoatRaceFlee
             position = intpos;
             buffTime = bufftime;
             velocityBuff = velocitybuff;
-
-            active = true;
-
             
 
             pickupAnimation.Initialize(1, 1, intpos, 0f, Color.White);

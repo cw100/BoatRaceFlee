@@ -43,7 +43,7 @@ namespace BoatRaceFlee
             playerNumber = playernumber;
             active = true;
             playerAnimation = new Animation();
-            playerAnimation.Initialize(4, 1, startposition, 0f, Color.White,true);
+            playerAnimation.Initialize(5, 1, startposition, 0f, Color.White,true);
             AddEmiters(startposition);
             }
         public void ScreenCollision()

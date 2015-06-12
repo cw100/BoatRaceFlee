@@ -148,11 +148,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
+    <Content Include="Content\2.png" />
+    <Content Include="Content\3.png" />
+    <Content Include="Content\4.png" />
     <Content Include="Content\Aircraft.png" />
     <Content Include="Content\Arrow.png" />
     <Content Include="Content\BattleShip.png" />
     <Content Include="Content\BeachRing.png" />
     <Content Include="Content\Boats.png" />
+    <Content Include="Content\Duck.png" />
     <Content Include="Content\EasyButton.png" />
     <Content Include="Content\ExitButton.png" />
     <Content Include="Content\explosion.png" />
