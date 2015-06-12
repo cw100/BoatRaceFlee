@@ -30,6 +30,8 @@ namespace BoatRaceFlee
         public void Initialize(Vector2 intvel, Vector2 intpos, float bufftime, float velocitybuff)
 
         {
+            active = true;
+
             velocity = intvel;
             position = intpos;
             buffTime = bufftime;

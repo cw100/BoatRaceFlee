@@ -35,7 +35,7 @@ namespace BoatRaceFlee
             NumSelect
 
         }
-        GameScreen gameState = GameScreen.MainMenu;
+        GameScreen gameState = GameScreen.GameRunning;
         public Game1()
         {
 
