@@ -131,6 +131,7 @@
     </Compile>
     <Compile Include="Game1.cs" />
     <Compile Include="Obstacle.cs" />
+    <Compile Include="Particle.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -147,9 +148,16 @@
     <Content Include="Content\Arrow.png" />
     <Content Include="Content\BattleShip.png" />
     <Content Include="Content\BeachRing.png" />
+    <Content Include="Content\Boats.png" />
     <Content Include="Content\ExitButton.png" />
+    <Content Include="Content\explosion.png" />
     <Content Include="Content\Longboat.png" />
     <Content Include="Content\PlayButton.png" />
+    <Content Include="Content\playerFourWins.png" />
+    <Content Include="Content\playerOneWin.png" />
+    <Content Include="Content\playerThreeWins.png" />
+    <Content Include="Content\playerTwoWins.png" />
+    <Content Include="Content\River.png" />
     <Content Include="Content\Rock.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

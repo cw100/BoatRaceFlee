@@ -47,6 +47,7 @@ namespace BoatRaceFlee
         Texture2D longBoat;
         Texture2D airCarrier;
         Texture2D battleShip;
+        Texture2D river;
         public void InitializeSelectScreen()
         {
 
@@ -55,15 +56,17 @@ namespace BoatRaceFlee
             airCarrier = Content.Load<Texture2D>("Aircraft");
             battleShip = Content.Load<Texture2D>("BattleShip");
             playerIcons = new List<Texture2D>();
-            
+            playerTexNames = new List<string>();
 
             playerIcons.Add(beachRing);
             playerIcons.Add(longBoat);
             playerIcons.Add(airCarrier);
-            playerIcons.Add(playerIcons);
+            playerIcons.Add(battleShip);
 
 
         }
+        int readyPlayers = 0;
+        List<string> playerTexNames;
         public void UpdateSelectScreen(GameTime gameTime)
         {
 
@@ -87,10 +90,36 @@ namespace BoatRaceFlee
             }
             if (readyPlayers == 4)
             {
-                currentGameScreen = GameScreen.GameRunning;
+                gameState = GameScreen.GameRunning;
             }
 
 
+
+        }
+        public void PlayerSelect(GameTime gameTime, int num)
+        {
+
+            if (0 <= players[num].playerSelected && players[num].playerSelected < playerIcons.Count)
+            {
+
+                elapsedTime += gameTime.ElapsedGameTime.Milliseconds;
+                if (elapsedTime > menuTime)
+                {
+                    players[num].playerSelected += (int)(GamePad.GetState(players[num].playerNumber).ThumbSticks.Left.X*2);
+                    elapsedTime = 0;
+                }
+
+            }
+
+
+            if (0 > players[num].playerSelected)
+            {
+                players[num].playerSelected = 0;
+            }
+            if (players[num].playerSelected >= playerIcons.Count)
+            {
+                players[num].playerSelected = playerIcons.Count-1;
+            }
 
         }
         public void DrawIcons(SpriteBatch spriteBatch)
@@ -139,6 +168,7 @@ namespace BoatRaceFlee
             screenScale = new Vector3(scaleX, scaleY, 1.0f);
             mouseState = new MouseState();
             players = new List<Player>();
+            obstacleList = new List<Obstacle>();
             InitializePlayers(numOfPlayers);
         }
         List<Button> menuButtons;
@@ -154,7 +184,7 @@ namespace BoatRaceFlee
             button.Initialize(new Vector2((1920) / 2, 700 + 140 / 2), "ExitButton", "exit", 2);
             menuButtons.Add(button);
         }
-        int menuTime = 1000;
+        int menuTime = 100;
         public void MenuSelect(GameTime gameTime, PlayerIndex num)
         {
             if (1 <= currentMenuItem && currentMenuItem <= menuButtons.Count)
@@ -190,7 +220,7 @@ namespace BoatRaceFlee
 
                     if (button.buttonName == "play")
                     {
-                        gameState = GameScreen.GameRunning;
+                        gameState = GameScreen.SelectScreen;
                     }
                     if (button.buttonName == "exit")
                     {
@@ -210,29 +240,61 @@ namespace BoatRaceFlee
             }
 
         }
+        public void UpdateExplosions(GameTime gameTime)
+        {
+            for (int i = 0; i < explosions.Count; i++)
+            {
+                explosions[i].Update(gameTime);
+                if (!explosions[i].active)
+                {
+                    
+                    explosions.RemoveAt(i);
+                }
+            }
+        }
 
         Animation obstacleAnimation =  new Animation();
         protected override void Initialize()
         {
+            riverPos = new Vector2(0, 0);
+            riverPosTwo = new Vector2(1600, 0);
+
+            riverPosThree = new Vector2(3200, 0);
             randomizer = new Random();
+            InitializeSelectScreen();
             InitializeMainMenu();
 
             InitializeGame();
-                    
+            explosions = new List<Animation>();
+            readyPlayers = 0;
             base.Initialize();
         }
 
-       
+        Texture2D riverTwo;
+        Texture2D riverThree;
+        Texture2D playerOneWin, playerTwoWin, playerThreeWin, playerFourWin, winningTex;
         protected override void LoadContent()
         {
 
             
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            
+            playerOneWin = Content.Load<Texture2D>("playerOneWin");
+
+            playerTwoWin = Content.Load<Texture2D>("playerTwoWins");
+
+            playerThreeWin = Content.Load<Texture2D>("playerThreeWins");
+
+            playerFourWin = Content.Load<Texture2D>("playerFourWins");
+
+            explosionTex = Content.Load<Texture2D>("explosion");
+            river = Content.Load<Texture2D>("river");
+            riverTwo = Content.Load<Texture2D>("river");
+            riverThree = Content.Load<Texture2D>("river");
             foreach (Player player in players)
             {
-                player.LoadContent(Content, "Arrow");
+                player.LoadContent(Content, "Boats");
             }
+
             foreach (Button button in menuButtons)
             {
                 button.LoadContent(Content, button.fileName);
@@ -273,8 +335,8 @@ namespace BoatRaceFlee
 
                             {
 
-
-                                players[i].active = false;
+                           
+                                players[i].health -= 100;
                             }
                         }
                     }
@@ -304,16 +366,38 @@ namespace BoatRaceFlee
             RockCollision();
             foreach (Player player in players)
                 player.Update(gameTime);
+
+            UpdateExplosions(gameTime);
+            GameOverCheck();
         }
+        Vector2 riverPos;
+        Vector2 riverPosTwo;
+        Vector2 riverPosThree;
+        Vector2 riverSpeed = new Vector2(500, 0);
         protected override void Update(GameTime gameTime)
         {
 
+            riverPos -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            riverPosTwo -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            riverPosThree -= riverSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if(riverPos.X<-1600)
+            {
+                riverPos.X = 3200;
+            }
+            if (riverPosTwo.X < -1600)
+            {
+                riverPosTwo.X = 3200;
+            }
+            if (riverPosThree.X < -1600)
+            {
+                riverPosThree.X = 3200;
+            }
 
             mouseState = Mouse.GetState();
-            //if (gameState == GameScreen.SelectScreen)
-            //{
-            //    UpdateSelectScreen(gameTime);
-            //}
+            if (gameState == GameScreen.SelectScreen)
+            {
+                UpdateSelectScreen(gameTime);
+            }
             if (gameState == GameScreen.GameRunning)
             {
                 UpdateGame(gameTime);
@@ -322,17 +406,88 @@ namespace BoatRaceFlee
             {
                 UpdateMenu(gameTime);
             }
-            //if (gameState == GameScreen.GameOver)
-            //{
-            //    UpdateGameOverScreen();
-            //}
+            if (gameState == GameScreen.GameOver)
+            {
+                UpdateGameOverScreen();
+            }
 
 
-            
+
             base.Update(gameTime);
         }
+        public void DrawGameOver()
+        {
+            //spriteBatch.Draw(backgroundGame, new Vector2(0, 0), Color.White);
 
-        
+            spriteBatch.Draw(winningTex, new Vector2((1920 - winningTex.Width) / 2, (1080 - winningTex.Height) / 2), Color.Green);
+
+        }
+        public void UpdateGameOverScreen()
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.B == ButtonState.Pressed)
+            {
+                gameState = GameScreen.MainMenu;
+                ResetGame();
+            }
+
+
+        }
+        public void ResetGame()
+        {
+            deadCount = 0;
+            Initialize();
+        }
+        static public  int deadCount = 0;
+        int winningPlayer;
+        static Texture2D explosionTex;
+        static List<Animation> explosions;
+        static public void AddExplosion(Vector2 position, float scale)
+        {
+            Animation explosion = new Animation();
+
+
+            explosion.spriteSheet = explosionTex;
+            explosion.Initialize(true, 10, 0.25f, position, 0f, Color.White);
+            explosion.scale = scale;
+            explosions.Add(explosion);
+        }
+        public void GameOverCheck()
+        {
+            if (deadCount == (numOfPlayers - 1))
+            {
+                foreach (Player player in players)
+                {
+                    if (player.active)
+                    {
+                        winningPlayer = (int)player.playerNumber;
+                        switch (winningPlayer)
+                        {
+                            case (int)PlayerIndex.One:
+                                winningTex = playerOneWin;
+                                break;
+                            case (int)PlayerIndex.Two:
+                                winningTex = playerTwoWin;
+                                break;
+                            case (int)PlayerIndex.Three:
+                                winningTex = playerThreeWin;
+                                break;
+                            case (int)PlayerIndex.Four:
+                                winningTex = playerFourWin;
+                                break;
+                        }
+                        gameState = GameScreen.GameOver;
+                    }
+                }
+
+            }
+        }
+        public void DrawExplosions(SpriteBatch spriteBatch)
+        {
+            foreach (Animation expl in explosions)
+            {
+                expl.Draw(spriteBatch);
+            }
+        }
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -346,7 +501,15 @@ namespace BoatRaceFlee
             rectangleTexture.SetData(color);
 
             spriteBatch.Begin();
-            if (gameState == GameScreen.MainMenu)
+            spriteBatch.Draw(river, riverPos, Color.White);
+            spriteBatch.Draw(riverTwo, riverPosTwo, Color.White);
+
+            spriteBatch.Draw(riverThree, riverPosThree, Color.White);
+            if (gameState == GameScreen.SelectScreen)
+            {
+                DrawIcons(spriteBatch);
+            }
+                if (gameState == GameScreen.MainMenu)
             {
                 DrawMenu(gameTime);
             }
@@ -361,11 +524,17 @@ namespace BoatRaceFlee
                 {
 
 
-                    spriteBatch.Draw(rectangleTexture, player.hitBox, Color.Green);
+                    //spriteBatch.Draw(rectangleTexture, player.hitBox, Color.Green);
 
 
                     player.Draw(spriteBatch);
                 }
+
+                DrawExplosions(spriteBatch);
+            }
+           if(gameState == GameScreen.GameOver)
+            {
+                DrawGameOver();
             }
             spriteBatch.End();
             base.Draw(gameTime);

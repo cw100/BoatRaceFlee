@@ -10,14 +10,14 @@ namespace BoatRaceFlee
 {
     class Player
     {
-      public+  bool ready = false;
+      public  bool ready = false;
         public float mass;
         float playerSpeed;
         public Vector2 position;
         public Vector2 velocity;
         public float angle;
         public int playerSelected;
-        int health;
+        public int health=100;
        public Animation playerAnimation;
       public  bool active;
         public Rectangle hitBox;
@@ -40,13 +40,13 @@ namespace BoatRaceFlee
             playerNumber = playernumber;
             active = true;
             playerAnimation = new Animation();
-            playerAnimation.Initialize(1, 1, startposition, 0f, Color.White);
+            playerAnimation.Initialize(4, 1, startposition, 0f, Color.White,true);
             }
         public void ScreenCollision()
         {
-            position.X = MathHelper.Clamp(position.X, 0 + (playerAnimation.frameWidth / 2), 1920 - (playerAnimation.frameWidth / 2));
+            position.X = MathHelper.Clamp(position.X, 0 , 1920 );
 
-            position.Y = MathHelper.Clamp(position.Y, 0 + (playerAnimation.frameHeight / 2), 1080 - (playerAnimation.frameHeight / 2));
+            position.Y = MathHelper.Clamp(position.Y, 0 , 1080 );
 
         }
         public void ControllerMove(GameTime gameTime)
@@ -106,27 +106,38 @@ namespace BoatRaceFlee
         {
             velocity *= 0.2f* (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
+
         public void Update(GameTime gameTime)
         {
-            Rotate();
-            ControllerMove(gameTime);
-            Vector2 direction = new Vector2((float)Math.Cos(angle),
-                                   (float)Math.Sin(angle));
-            direction.Normalize();
-            position += direction * 200 * (float)gameTime.ElapsedGameTime.TotalSeconds - new Vector2(100 * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
+            if (active)
+            {
+                playerAnimation.frameIndex = playerSelected;
+                Rotate();
+                ControllerMove(gameTime);
+                Vector2 direction = new Vector2((float)Math.Cos(angle),
+                                       (float)Math.Sin(angle));
+                direction.Normalize();
+                position += direction * 200 * (float)gameTime.ElapsedGameTime.TotalSeconds - new Vector2(100 * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
 
-            
-            ScreenCollision();
-            ApplyFriction(gameTime);
-            hitBox.Y = (int)position.Y - playerAnimation.frameHeight / 2;
-            hitBox.X = (int)position.X - playerAnimation.frameWidth / 2;
-            playerAnimation.position = position;
-            playerAnimation.angle = angle;
-            playerAnimation.Update(gameTime);
-            playerTransformation =
-                    Matrix.CreateTranslation(new Vector3(-playerAnimation.origin, 0.0f)) *
-                    Matrix.CreateScale(playerAnimation.scale) *
-                    Matrix.CreateTranslation(new Vector3(playerAnimation.position, 0.0f));
+
+                ScreenCollision();
+                ApplyFriction(gameTime);
+                hitBox.Y = (int)position.Y - playerAnimation.frameHeight / 2;
+                hitBox.X = (int)position.X - playerAnimation.frameWidth / 2;
+                playerAnimation.position = position;
+                playerAnimation.angle = angle;
+                playerAnimation.Update(gameTime);
+                playerTransformation =
+                        Matrix.CreateTranslation(new Vector3(-playerAnimation.origin, 0.0f)) *
+                        Matrix.CreateScale(playerAnimation.scale) *
+                        Matrix.CreateTranslation(new Vector3(playerAnimation.position, 0.0f));
+                if (health <= 0)
+                {
+                    Game1.AddExplosion(position, 4f);
+                    Game1.deadCount += 1;
+                    active = false;
+                }
+            }
         }
         public void Draw(SpriteBatch spriteBatch)
         {
