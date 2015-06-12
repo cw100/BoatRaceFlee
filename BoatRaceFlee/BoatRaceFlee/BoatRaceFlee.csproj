@@ -147,15 +147,19 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Logo.png" />
     <Content Include="Content\Aircraft.png" />
     <Content Include="Content\Arrow.png" />
     <Content Include="Content\BattleShip.png" />
     <Content Include="Content\BeachRing.png" />
     <Content Include="Content\Boats.png" />
+    <Content Include="Content\EasyButton.png" />
     <Content Include="Content\ExitButton.png" />
     <Content Include="Content\explosion.png" />
     <Content Include="Content\fuel.png" />
+    <Content Include="Content\HardButton.png" />
     <Content Include="Content\Longboat.png" />
+    <Content Include="Content\NormalButton.png" />
     <Content Include="Content\PlayButton.png" />
     <Content Include="Content\playerFourWins.png" />
     <Content Include="Content\playerOneWin.png" />
@@ -173,9 +177,6 @@
     <Content Include="Content\Title.png" />
     <Content Include="Content\wake.png" />
     <Content Include="Properties\Default.rd.xml" />
-    <Content Include="Assets\Logo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\SplashScreen.png" />
     <Content Include="Assets\StoreLogo.scale-100.png" />

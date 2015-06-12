@@ -29,11 +29,12 @@ namespace BoatRaceFlee
         {
             MainMenu,
             SelectScreen,
+            DificultySelect,
             GameRunning,
             GameOver
 
         }
-        GameScreen gameState = GameScreen.GameRunning;
+        GameScreen gameState = GameScreen.MainMenu;
         public Game1()
         {
 
@@ -95,24 +96,29 @@ namespace BoatRaceFlee
             }
             if (readyPlayers == 4)
             {
-                gameState = GameScreen.GameRunning;
+                gameState = GameScreen.DificultySelect;
             }
 
 
 
         }
         float elapsedTime;
+
+        float elapsedmenuTime;
         public void PlayerSelect(GameTime gameTime, int num)
         {
 
             if (0 <= players[num].playerSelected && players[num].playerSelected < playerIcons.Count)
             {
 
-                elapsedTime += gameTime.ElapsedGameTime.Milliseconds;
-                if (elapsedTime > menuTime)
-                {
-                    players[num].playerSelected += (int)(GamePad.GetState(players[num].playerNumber).ThumbSticks.Left.X*2);
-                    elapsedTime = 0;
+                elapsedmenuTime += gameTime.ElapsedGameTime.Milliseconds;
+                if ((int)(GamePad.GetState(players[num].playerNumber).ThumbSticks.Left.X) != 0)
+                    {
+                    if (elapsedmenuTime > menuTime)
+                    {
+                        players[num].playerSelected += (int)(GamePad.GetState(players[num].playerNumber).ThumbSticks.Left.X );
+                        elapsedmenuTime = 0;
+                    }
                 }
 
             }
@@ -205,6 +211,8 @@ namespace BoatRaceFlee
       
 
         List<Button> menuButtons;
+
+        List<Button> difButtons;
         public void InitializeMainMenu()
         {
             menuButtons = new List<Button>();
@@ -217,7 +225,23 @@ namespace BoatRaceFlee
             button.Initialize(new Vector2((1920) / 2, 700 + 140 / 2), "ExitButton", "exit", 2);
             menuButtons.Add(button);
         }
-        int menuTime = 300;
+        public void InitializeDifMenu()
+        {
+            difButtons = new List<Button>();
+
+            Button button = new Button();
+            button.Initialize(new Vector2((1920) / 2, 300 + 140 / 2), "EasyButton", "Easy", 1);
+            difButtons.Add(button);
+
+            button = new Button();
+            button.Initialize(new Vector2((1920) / 2, 500 + 140 / 2), "NormalButton", "Normal", 2);
+            difButtons.Add(button);
+
+            button = new Button();
+            button.Initialize(new Vector2((1920) / 2, 700 + 140 / 2), "HardButton", "Hard", 3);
+            difButtons.Add(button);
+        }
+        int menuTime = 200;
         public void MenuSelect(GameTime gameTime, PlayerIndex num)
         {
             if (1 <= currentMenuItem && currentMenuItem <= menuButtons.Count)
@@ -242,6 +266,36 @@ namespace BoatRaceFlee
                 currentMenuItem = menuButtons.Count;
             }
         }
+        float elapseddifmenuTime = 0;
+        public void DifMenuSelect(GameTime gameTime, PlayerIndex num)
+        {
+            if (1 <= currentMenuItem && currentMenuItem <= difButtons.Count)
+            {
+
+                elapseddifmenuTime += gameTime.ElapsedGameTime.Milliseconds;
+                if ((GamePad.GetState(num).ThumbSticks.Left.Y) != 0)
+                {
+                    if (elapseddifmenuTime > menuTime)
+                    {
+                        currentMenuItem -= MathHelper.Clamp( (int)(GamePad.GetState(num).ThumbSticks.Left.Y*1000),-1,1);
+                        elapseddifmenuTime = 0;
+                    }
+                }
+
+
+
+            }
+
+
+            if (1 > currentMenuItem)
+            {
+                currentMenuItem = 1;
+            }
+            if (currentMenuItem > difButtons.Count)
+            {
+                currentMenuItem = difButtons.Count;
+            }
+        }
         public void UpdateMenu(GameTime gameTime)
         {
             MenuSelect(gameTime, PlayerIndex.One);
@@ -254,6 +308,7 @@ namespace BoatRaceFlee
                     if (button.buttonName == "play")
                     {
                         gameState = GameScreen.SelectScreen;
+                        
                     }
                     if (button.buttonName == "exit")
                     {
@@ -263,10 +318,50 @@ namespace BoatRaceFlee
             }
 
         }
+        int dif;
+        public void DifUpdateMenu(GameTime gameTime)
+        {
+            DifMenuSelect(gameTime, PlayerIndex.One);
+            foreach (Button button in difButtons)
+            {
+                button.Update(gameTime, mouseState, currentMenuItem);
+                if (button.CheckForClick(mouseState))
+                {
+
+                    if (button.buttonName == "Easy")
+                    {
+                        dif = 1;
+                        gameState = GameScreen.GameRunning;
+                    }
+                    if (button.buttonName == "Normal")
+                    {
+                        dif = 2;
+                        gameState = GameScreen.GameRunning;
+                    }
+                    if (button.buttonName == "Hard")
+                    {
+
+                        dif = 3;
+                        gameState = GameScreen.GameRunning;
+                    }
+                }
+            }
+
+        }
         public void DrawMenu(GameTime gameTime)
         {
             spriteBatch.Draw(Title, new Vector2((1920- 1898 )/ 2, 200), Color.White);
             foreach (Button button in menuButtons)
+
+            {
+                button.Draw(spriteBatch);
+            }
+
+        }
+        public void DrawDifMenu(GameTime gameTime)
+        {
+            
+            foreach (Button button in difButtons)
 
             {
                 button.Draw(spriteBatch);
@@ -310,7 +405,8 @@ namespace BoatRaceFlee
             pickups = new List<Pickup>();
             InitializeSelectScreen();
             InitializeMainMenu();
-
+            InitializeDifMenu();
+            totalSeconds = 0;
             InitializeGame();
             explosions = new List<Animation>();
             readyPlayers = 0;
@@ -352,6 +448,10 @@ namespace BoatRaceFlee
             }
 
             foreach (Button button in menuButtons)
+            {
+                button.LoadContent(Content, button.fileName);
+            }
+            foreach (Button button in difButtons)
             {
                 button.LoadContent(Content, button.fileName);
             }
@@ -515,7 +615,7 @@ namespace BoatRaceFlee
         public void UpdateGame(GameTime gameTime)
         {
             totalSeconds += (int)(gameTime.ElapsedGameTime.TotalSeconds);
-            if (2000 -( totalSeconds * 10) < 3000 - (totalSeconds * 20))
+            if (2000 -( totalSeconds * 10*(dif)) < 3000 - (totalSeconds * 20) * (dif))
             {
                 rockTime = randomizer.Next(2000 - (int)(totalSeconds * 10), 3000 - (int)(totalSeconds * 20));
             }
@@ -641,6 +741,10 @@ namespace BoatRaceFlee
             {
                 UpdateGameOverScreen();
             }
+            if (gameState == GameScreen.DificultySelect)
+            {
+                DifUpdateMenu(gameTime);
+            }
 
 
 
@@ -765,16 +869,15 @@ namespace BoatRaceFlee
             {
                 DrawMenu(gameTime);
             }
-                if (gameState == GameScreen.GameRunning)
+            if (gameState == GameScreen.DificultySelect)
+            {
+                DrawDifMenu(gameTime);
+            }
+            if (gameState == GameScreen.GameRunning)
             {
                 foreach (Pickup pickup in pickups)
                 {
                     pickup.Draw(spriteBatch);
-
-                }
-                foreach (Obstacle rock in obstacleList)
-                {
-                    rock.Draw(spriteBatch);
 
                 }
                 foreach (Player player in players)
@@ -786,6 +889,12 @@ namespace BoatRaceFlee
 
                     player.Draw(spriteBatch);
                 }
+                foreach (Obstacle rock in obstacleList)
+                {
+                    rock.Draw(spriteBatch);
+
+                }
+                
 
                 DrawExplosions(spriteBatch);
             }
