@@ -154,6 +154,7 @@
     <Content Include="Content\Boats.png" />
     <Content Include="Content\ExitButton.png" />
     <Content Include="Content\explosion.png" />
+    <Content Include="Content\fuel.png" />
     <Content Include="Content\Longboat.png" />
     <Content Include="Content\PlayButton.png" />
     <Content Include="Content\playerFourWins.png" />

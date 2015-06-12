@@ -33,7 +33,7 @@ namespace BoatRaceFlee
             GameOver
 
         }
-        GameScreen gameState = GameScreen.MainMenu;
+        GameScreen gameState = GameScreen.GameRunning;
         public Game1()
         {
 
@@ -202,10 +202,7 @@ namespace BoatRaceFlee
             obstacleList = new List<Obstacle>();
             InitializePlayers(numOfPlayers);
         }
-        public void AddPickup()
-        {
-            Pickup pickup = new Pickup();
-        }
+      
 
         List<Button> menuButtons;
         public void InitializeMainMenu()
@@ -310,7 +307,7 @@ namespace BoatRaceFlee
             riverBankTwo.Initialize(1, 1, riverbankPosTwo, 0f, Color.White);
             riverBankThree.Initialize(1, 1, riverbankPosThree, 0f, Color.White);
             riverBankFour.Initialize(1, 1, riverbankPosFour, 0f, Color.White);
-
+            pickups = new List<Pickup>();
             InitializeSelectScreen();
             InitializeMainMenu();
 
@@ -363,7 +360,29 @@ namespace BoatRaceFlee
         }
 
         List<Obstacle> obstacleList = new List<Obstacle>();
+        public void AddPickup()
+        {
+            Pickup pickup = new Pickup();
+            pickup.LoadContent(Content, "fuel");
+            pickup.Initialize(new Vector2(300, 0),  new Vector2(1970, randomizer.Next(100, 1000)),5000f,300f);
+           
+            pickups.Add(pickup);
 
+        }
+        public void UpdatePickup(GameTime gameTime)
+        {
+            foreach(Pickup pickup in pickups)
+            {
+                pickup.Update(gameTime);
+            }
+        }
+        public void DrawPickup(SpriteBatch spriteBatch)
+        {
+            foreach (Pickup pickup in pickups)
+            {
+                pickup.Draw(spriteBatch);
+            }
+        }
         public void AddRock()
         {
             for (int k = 0; k < randomizer.Next(1, 5); k++)
@@ -375,7 +394,7 @@ namespace BoatRaceFlee
                 obstacleAnimation.LoadContent(Content, "Rock");
                 Vector2 pos = new Vector2(1920 + obstacleAnimation.frameWidth, randomizer.Next(obstacleAnimation.frameHeight, 1080- obstacleAnimation.frameHeight));
                 obstacle.angle = (float)randomizer.Next(0, 180);
-                obstacle.Initialize(pos, new Vector2(300f, 0), obstacleAnimation);
+                obstacle.Initialize(pos, new Vector2(300f+randomizer.Next(-50,50), 0), obstacleAnimation);
 
                 obstacleList.Add(obstacle);
             }
@@ -403,6 +422,31 @@ namespace BoatRaceFlee
                     }
                 }
             
+        }
+        public void PickupCollision()
+        {
+
+            for (int i = 0; i < players.Count; i++)
+            {
+                for (int j = 0; j < pickups.Count; j++)
+                {
+                    if (players[i].hitBox.Intersects(pickups[j].hitBox))
+                    {
+                        if (Collision.CollidesWith(players[i].playerAnimation,
+                        pickups[j].pickupAnimation, players[i].playerTransformation,
+                        pickups[j].pickupAnimation.transformation))
+
+                        {
+
+
+                            players[i].buff += pickups[j].velocityBuff;
+                            players[i].buffTime += pickups[j].buffTime;
+                            pickups.RemoveAt(j);
+                        }
+                    }
+                }
+            }
+
         }
         public void SideCollision()
         {
@@ -465,17 +509,33 @@ namespace BoatRaceFlee
         
         float rockElapsedTime;
         float rockTime=2000;
+        float pickupTime= 5000;
+        float pickupElapsedTime;
+        float totalSeconds;
         public void UpdateGame(GameTime gameTime)
         {
-            
-            rockTime = randomizer.Next(1500 - (int)(gameTime.ElapsedGameTime.TotalSeconds*10), 2500 - (int)(gameTime.ElapsedGameTime.TotalSeconds * 20));
-
+            totalSeconds += (int)(gameTime.ElapsedGameTime.TotalSeconds);
+            if (2000 -( totalSeconds * 10) < 3000 - (totalSeconds * 20))
+            {
+                rockTime = randomizer.Next(2000 - (int)(totalSeconds * 10), 3000 - (int)(totalSeconds * 20));
+            }
+            else
+            {
+                rockTime = 500;
+            }
             rockElapsedTime += gameTime.ElapsedGameTime.Milliseconds;
             if (rockElapsedTime > rockTime)
             {
                 AddRock();
                 rockElapsedTime = 0;
             }
+            pickupElapsedTime += gameTime.ElapsedGameTime.Milliseconds;
+            if (pickupElapsedTime > pickupTime)
+            {
+                AddPickup();
+                pickupElapsedTime = 0;
+            }
+            UpdatePickup(gameTime);
             foreach (Obstacle rock in obstacleList)
             {
                 rock.Update(gameTime);
@@ -487,6 +547,7 @@ namespace BoatRaceFlee
             UpdateExplosions(gameTime);
             Explosivecollisions();
             SideCollision();
+            PickupCollision();
             GameOverCheck();
         }
         Vector2 riverPos;
@@ -706,6 +767,11 @@ namespace BoatRaceFlee
             }
                 if (gameState == GameScreen.GameRunning)
             {
+                foreach (Pickup pickup in pickups)
+                {
+                    pickup.Draw(spriteBatch);
+
+                }
                 foreach (Obstacle rock in obstacleList)
                 {
                     rock.Draw(spriteBatch);

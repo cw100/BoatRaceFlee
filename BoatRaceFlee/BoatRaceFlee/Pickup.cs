@@ -11,7 +11,7 @@ namespace BoatRaceFlee
     class Pickup
     {
 
-        public Vector2 velocityBuff;
+        public float velocityBuff;
         public Vector2 position;
         public Rectangle hitBox;
         public Vector2 velocity;
@@ -22,11 +22,12 @@ namespace BoatRaceFlee
 
         public void LoadContent(ContentManager theContentManager, string textureName)
         {
+            pickupAnimation = new Animation();
             pickupAnimation.LoadContent(theContentManager, textureName);
             hitBox = new Rectangle((int)position.X - pickupAnimation.frameWidth / 2, (int)position.Y - pickupAnimation.frameHeight / 2, pickupAnimation.frameWidth, pickupAnimation.frameHeight);
 
         }
-        public void Initialize(Vector2 intvel, Vector2 intpos, float bufftime, Vector2 velocitybuff)
+        public void Initialize(Vector2 intvel, Vector2 intpos, float bufftime, float velocitybuff)
 
         {
             velocity = intvel;
@@ -36,7 +37,7 @@ namespace BoatRaceFlee
 
             active = true;
 
-            pickupAnimation = new Animation();
+            
 
             pickupAnimation.Initialize(1, 1, intpos, 0f, Color.White);
         }
@@ -46,9 +47,11 @@ namespace BoatRaceFlee
             if (active)
             {
             
-            position += velocity * gameTime.ElapsedGameTime.Seconds;
-
-            pickupAnimation.position = position;
+            position -= velocity*(float)gameTime.ElapsedGameTime.TotalSeconds;
+                hitBox.X = (int)position.X;
+                hitBox.Y = (int)position.Y;
+                pickupAnimation.position = position;
+                pickupAnimation.Update(gameTime);
         }
     }
         public void Draw(SpriteBatch spriteBatch)

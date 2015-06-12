@@ -10,7 +10,9 @@ namespace BoatRaceFlee
 {
     class Player
     {
-      public  bool ready = false;
+        public float buff;
+        public float buffTime=0;
+        public  bool ready = false;
         public float mass;
         float playerSpeed;
         public Vector2 position;
@@ -138,17 +140,28 @@ namespace BoatRaceFlee
 
         }
         Vector2 direction;
+        float timeWithBuff=0;
         public void Update(GameTime gameTime)
         {
             if (active)
             {
+                if (buff != 0)
+                {
+                    timeWithBuff += gameTime.ElapsedGameTime.Milliseconds;
+                    if (timeWithBuff > buffTime)
+                    {
+                        buff = 0;
+                        timeWithBuff = 0;
+
+                    }
+                }
                 playerAnimation.frameIndex = playerSelected;
                 Rotate();
                 ControllerMove(gameTime);
                  direction = new Vector2((float)Math.Cos(angle),
                                        (float)Math.Sin(angle));
                 direction.Normalize();
-                position += direction * 200 * (float)gameTime.ElapsedGameTime.TotalSeconds - new Vector2(100 * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
+                position += direction * (200+ buff) * (float)gameTime.ElapsedGameTime.TotalSeconds - new Vector2(100 * (float)gameTime.ElapsedGameTime.TotalSeconds, 0);
 
 
                 ScreenCollision();
