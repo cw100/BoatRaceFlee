@@ -35,7 +35,7 @@ namespace BoatRaceFlee
             NumSelect
 
         }
-        GameScreen gameState = GameScreen.GameRunning;
+        GameScreen gameState = GameScreen.MainMenu;
         public Game1()
         {
 
@@ -213,7 +213,7 @@ namespace BoatRaceFlee
             mouseState = new MouseState();
             players = new List<Player>();
             obstacleList = new List<Obstacle>();
-            InitializePlayers(numOfPlayers);
+            InitializePlayers(4);
         }
       
 

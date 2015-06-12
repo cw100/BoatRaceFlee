@@ -175,6 +175,8 @@ namespace BoatRaceFlee
                         Matrix.CreateTranslation(new Vector3(-playerAnimation.origin, 0.0f)) *
                         Matrix.CreateScale(playerAnimation.scale) *
                         Matrix.CreateTranslation(new Vector3(playerAnimation.position, 0.0f));
+                        Matrix.CreateTranslation(new Vector3(playerAnimation.position, 0.0f));
+
                 UpdateEmiters(gameTime);
 
                 if (health <= 0)
