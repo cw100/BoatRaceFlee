@@ -16,7 +16,7 @@
   <Properties>
     <DisplayName>BoatRaceFlee</DisplayName>
     <PublisherDisplayName>gamejam</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\Logo.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -32,6 +32,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="BoatRaceFlee.App">
       <uap:VisualElements
+        ToastCapable="true"
         DisplayName="BoatRaceFlee"
         Square150x150Logo="Assets\Logo.png"
         Square44x44Logo="Assets\SmallLogo.png"

@@ -5,6 +5,9 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using Windows.UI.Notifications;
+using Windows.Data.Xml.Dom;
+
 namespace BoatRaceFlee
 {
     
@@ -14,8 +17,10 @@ namespace BoatRaceFlee
         SpriteBatch spriteBatch;
         MouseState mouseState;
         Random randomizer;
-        
+
+        static public List<Rectangle> explosionHitBoxes;
         List<Vector2> SpawnList = new List<Vector2>();
+        List<Pickup> pickups;
 
         List<Player> players;
         
@@ -28,14 +33,14 @@ namespace BoatRaceFlee
             GameOver
 
         }
-        GameScreen gameState = GameScreen.GameRunning;
+        GameScreen gameState = GameScreen.MainMenu;
         public Game1()
         {
 
             IsMouseVisible = true;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
+            graphics.IsFullScreen = true;
             graphics.PreferredBackBufferHeight = 1080;
 
             graphics.PreferredBackBufferWidth = 1920;
@@ -96,6 +101,7 @@ namespace BoatRaceFlee
 
 
         }
+        float elapsedTime;
         public void PlayerSelect(GameTime gameTime, int num)
         {
 
@@ -136,13 +142,35 @@ namespace BoatRaceFlee
                 }
             }
         }
+        float explosionsTimer = 200;
+        int expnum= 0;
+        public void ScreenExplosions(GameTime gameTime)
+        {
+            
+                elapsedTime += gameTime.ElapsedGameTime.Milliseconds;
+                if (explosionsTimer < elapsedTime)
+                {
+                    AddExplosion(new Vector2(20, 50 * (expnum + 1)), 3f);
+                AddExplosion(new Vector2(20, 1080-50 * (expnum + 1)), 3f);
+                elapsedTime = 0;
+                if( expnum<18)
+                    {
+                    expnum++;
+                    }
+                else
+                {
+                    expnum = 0;
+                }
+                }
+            
+        }
 
         public void InitializePlayers(int numOfPlayers)
         {
-            SpawnList.Add(new Vector2(2 + 150, 350));
+            SpawnList.Add(new Vector2(2 + 150, 250));
+            SpawnList.Add(new Vector2(2 + 150, 450));
+            SpawnList.Add(new Vector2(2 + 150, 650));
             SpawnList.Add(new Vector2(2 + 150, 850));
-            SpawnList.Add(new Vector2(1610 + 150, 850));
-            SpawnList.Add(new Vector2(1612 + 150, 400));
             for (int i = 0; i < numOfPlayers; i++)
             {
                 Player player;
@@ -166,13 +194,19 @@ namespace BoatRaceFlee
         {
             float scaleX = (float)GraphicsDevice.Viewport.Width / (float)VirtualScreenWidth;
             float scaleY = (float)GraphicsDevice.Viewport.Height / (float)VirtualScreenHeight;
-
+            List<Pickup> pickups = new List<Pickup>();
+            explosionHitBoxes = new List<Rectangle>();
             screenScale = new Vector3(scaleX, scaleY, 1.0f);
             mouseState = new MouseState();
             players = new List<Player>();
             obstacleList = new List<Obstacle>();
             InitializePlayers(numOfPlayers);
         }
+        public void AddPickup()
+        {
+            Pickup pickup = new Pickup();
+        }
+
         List<Button> menuButtons;
         public void InitializeMainMenu()
         {
@@ -186,7 +220,7 @@ namespace BoatRaceFlee
             button.Initialize(new Vector2((1920) / 2, 700 + 140 / 2), "ExitButton", "exit", 2);
             menuButtons.Add(button);
         }
-        int menuTime = 100;
+        int menuTime = 300;
         public void MenuSelect(GameTime gameTime, PlayerIndex num)
         {
             if (1 <= currentMenuItem && currentMenuItem <= menuButtons.Count)
@@ -234,7 +268,7 @@ namespace BoatRaceFlee
         }
         public void DrawMenu(GameTime gameTime)
         {
-           // spriteBatch.Draw(MenuBackground, new Vector2(0, 0), Color.White);
+            spriteBatch.Draw(Title, new Vector2((1920- 1898 )/ 2, 200), Color.White);
             foreach (Button button in menuButtons)
 
             {
@@ -249,7 +283,7 @@ namespace BoatRaceFlee
                 explosions[i].Update(gameTime);
                 if (!explosions[i].active)
                 {
-                    
+                    explosionHitBoxes.RemoveAt(i);
                     explosions.RemoveAt(i);
                 }
             }
@@ -262,16 +296,20 @@ namespace BoatRaceFlee
             riverPosTwo = new Vector2(1600, 0);
 
             riverPosThree = new Vector2(3200, 0);
-            riverbankPos= new Vector2(0, 0);
-            riverbankPosTwo= new Vector2(3720, 0);
+            riverbankPos= new Vector2(3720 / 2, 28);
+            riverbankPosTwo= new Vector2((3720 / 2) + 3720, 28);
 
-            riverbankPosThree = new Vector2(0, 1080 - 85);
-            riverbankPosFour = new Vector2(3720, 1080-85);
+            riverbankPosThree = new Vector2(3720 / 2, 1080- 28);
+            riverbankPosFour = new Vector2((3720 / 2)+ 3720, 1080 - 28);
             randomizer = new Random();
             riverBankOne = new Animation();
             riverBankTwo = new Animation();
             riverBankThree = new Animation();
             riverBankFour = new Animation();
+            riverBankOne.Initialize(1, 1, riverbankPos, 0f, Color.White);
+            riverBankTwo.Initialize(1, 1, riverbankPosTwo, 0f, Color.White);
+            riverBankThree.Initialize(1, 1, riverbankPosThree, 0f, Color.White);
+            riverBankFour.Initialize(1, 1, riverbankPosFour, 0f, Color.White);
 
             InitializeSelectScreen();
             InitializeMainMenu();
@@ -285,11 +323,13 @@ namespace BoatRaceFlee
         Texture2D riverTwo;
         Texture2D riverThree;
         Texture2D playerOneWin, playerTwoWin, playerThreeWin, playerFourWin, winningTex;
+        Texture2D Title;
         protected override void LoadContent()
         {
 
             
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            Title = Content.Load<Texture2D>("Title");
             playerOneWin = Content.Load<Texture2D>("playerOneWin");
 
             playerTwoWin = Content.Load<Texture2D>("playerTwoWins");
@@ -329,8 +369,9 @@ namespace BoatRaceFlee
             for (int k = 0; k < randomizer.Next(1, 5); k++)
             {
                 Obstacle obstacle = new Obstacle();
+                float scale = (float)randomizer.NextDouble()  + 0.5f;
                 obstacleAnimation = new Animation();
-                
+                obstacleAnimation.scale = scale;
                 obstacleAnimation.LoadContent(Content, "Rock");
                 Vector2 pos = new Vector2(1920 + obstacleAnimation.frameWidth, randomizer.Next(obstacleAnimation.frameHeight, 1080- obstacleAnimation.frameHeight));
                 obstacle.angle = (float)randomizer.Next(0, 180);
@@ -363,23 +404,77 @@ namespace BoatRaceFlee
                 }
             
         }
+        public void SideCollision()
+        {
 
-      
+            for (int i = 0; i < players.Count; i++)
+            {
+               
+                    if (players[i].hitBox.Intersects(new Rectangle(0, 0, 1920, 60)))
+                    {
+                        if (Collision.CollidesWith(players[i].playerAnimation,
+                        riverBankOne, players[i].playerTransformation,
+                        riverBankOne.transformation))
+
+                        {
+
+
+                            players[i].health -= 100;
+                        }
+                        if (Collision.CollidesWith(players[i].playerAnimation,
+                        riverBankTwo, players[i].playerTransformation,
+                        riverBankTwo.transformation))
+
+                        {
+
+
+                            players[i].health -= 100;
+                        }
+                    }
+                    if (players[i].hitBox.Intersects(new Rectangle(0, 1020, 1920, 60)))
+                    {
+                        if (Collision.CollidesWith(players[i].playerAnimation,
+                        riverBankThree, players[i].playerTransformation,
+                        riverBankThree.transformation))
+
+                        {
+
+
+                            players[i].health -= 100;
+                        }
+                        if (Collision.CollidesWith(players[i].playerAnimation,
+                        riverBankFour, players[i].playerTransformation,
+                        riverBankFour.transformation))
+
+                        {
+
+
+                            players[i].health -= 100;
+                        }
+                    }
+                
+            }
+
+        }
+
+
+
         protected override void UnloadContent()
         {
         }
         
-        float elapsedTime;
+        float rockElapsedTime;
         float rockTime=2000;
         public void UpdateGame(GameTime gameTime)
         {
-            rockTime = randomizer.Next(1000, 2500);
+            
+            rockTime = randomizer.Next(1500 - (int)(gameTime.ElapsedGameTime.TotalSeconds*10), 2500 - (int)(gameTime.ElapsedGameTime.TotalSeconds * 20));
 
-            elapsedTime += gameTime.ElapsedGameTime.Milliseconds;
-            if (elapsedTime > rockTime)
+            rockElapsedTime += gameTime.ElapsedGameTime.Milliseconds;
+            if (rockElapsedTime > rockTime)
             {
                 AddRock();
-                elapsedTime = 0;
+                rockElapsedTime = 0;
             }
             foreach (Obstacle rock in obstacleList)
             {
@@ -388,8 +483,10 @@ namespace BoatRaceFlee
             RockCollision();
             foreach (Player player in players)
                 player.Update(gameTime);
-
+            ScreenExplosions(gameTime);
             UpdateExplosions(gameTime);
+            Explosivecollisions();
+            SideCollision();
             GameOverCheck();
         }
         Vector2 riverPos;
@@ -401,6 +498,24 @@ namespace BoatRaceFlee
         Vector2 riverbankPosThree;
         Vector2 riverbankPosFour;
         static public Texture2D particleWake;
+
+        public void Explosivecollisions()
+        {
+            foreach (Player ply in players)
+            {
+                for (int i = 0; i <explosionHitBoxes.Count;i++)
+                {
+                    if (explosionHitBoxes[i].Intersects(ply.hitBox))
+                    {
+                       if( Collision.CollidesWith(ply.playerAnimation,explosions[i],ply.playerTransformation,explosions[i].transformation))
+                            {
+                            ply.health -= 100;
+                        }
+                    }
+                    
+                }
+            }
+        }
         protected override void Update(GameTime gameTime)
         {
 
@@ -424,21 +539,21 @@ namespace BoatRaceFlee
             {
                 riverPosThree.X = 3200;
             }
-            if (riverbankPos.X < -3720)
+            if (riverbankPos.X < -3720 / 2)
             {
-                riverbankPos.X = 3720;
+                riverbankPos.X = (3720 / 2) + 3726;
             }
-            if (riverbankPosTwo.X < -3720)
+            if (riverbankPosTwo.X < -3720 / 2)
             {
-                riverbankPosTwo.X = 3720;
+                riverbankPosTwo.X = (3720 / 2) + 3726;
             }
-            if (riverbankPosThree.X < -3720)
+            if (riverbankPosThree.X < -3720 / 2)
             {
-                riverbankPosThree.X = 3720;
+                riverbankPosThree.X = (3720 / 2) + 3726;
             }
-            if (riverbankPosFour.X < -3720)
+            if (riverbankPosFour.X < -3720 / 2)
             {
-                riverbankPosFour.X = 3720;
+                riverbankPosFour.X = (3720 / 2) + 3726;
             }
             riverBankOne.position = riverbankPos;
             riverBankOne.Update(gameTime);
@@ -446,7 +561,7 @@ namespace BoatRaceFlee
             riverBankTwo.Update(gameTime);
             riverBankThree.position = riverbankPosThree;
             riverBankThree.Update(gameTime);
-            riverBankFour.position = riverbankPosThree;
+            riverBankFour.position = riverbankPosFour;
             riverBankFour.Update(gameTime);
             mouseState = Mouse.GetState();
             if (gameState == GameScreen.SelectScreen)
@@ -504,8 +619,11 @@ namespace BoatRaceFlee
             explosion.spriteSheet = explosionTex;
             explosion.Initialize(true, 10, 0.25f, position, 0f, Color.White);
             explosion.scale = scale;
+            explosionHitBoxes.Add(new Rectangle((int)position.X, (int)position.Y, explosion.frameWidth * 2, explosion.frameHeight * 2));
+
             explosions.Add(explosion);
         }
+      
         public void GameOverCheck()
         {
             if (deadCount == (numOfPlayers - 1))
@@ -530,6 +648,17 @@ namespace BoatRaceFlee
                                 winningTex = playerFourWin;
                                 break;
                         }
+                        ToastTemplateType toastTemplate = ToastTemplateType.ToastImageAndText01;
+                        XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
+                        XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
+                        int winnum = winningPlayer + 1;
+                        toastTextElements[0].AppendChild(toastXml.CreateTextNode("Player "+ winnum + " Wins!" ));
+
+
+                        ToastNotification toast = new ToastNotification(toastXml);
+
+                        ToastNotificationManager.CreateToastNotifier().Show(toast);
+
                         gameState = GameScreen.GameOver;
                     }
                 }
@@ -562,6 +691,10 @@ namespace BoatRaceFlee
             spriteBatch.Draw(riverThree, riverPosThree, Color.White);
 
             riverBankOne.Draw(spriteBatch);
+            riverBankTwo.Draw(spriteBatch);
+            riverBankThree.Draw(spriteBatch);
+            riverBankFour.Draw(spriteBatch);
+
 
             if (gameState == GameScreen.SelectScreen)
             {

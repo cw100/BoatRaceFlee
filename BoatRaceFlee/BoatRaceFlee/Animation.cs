@@ -102,7 +102,12 @@ namespace BoatRaceFlee
             if (frameIndex > totalFrames) frameIndex = 1;
             source = new Rectangle(frameIndex * frameWidth, 0, frameWidth, frameHeight);
             origin = new Vector2(frameWidth / 2.0f, frameHeight / 2.0f);
+            transformation =
+                        Matrix.CreateTranslation(new Vector3(-origin, 0.0f)) *
+                        Matrix.CreateScale(scale) *
+                        Matrix.CreateTranslation(new Vector3(position, 0.0f));
         }
+        public Matrix transformation;
 
         public void Draw(SpriteBatch spriteBatch)
         {

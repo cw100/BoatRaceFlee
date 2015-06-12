@@ -71,7 +71,7 @@ namespace BoatRaceFlee
             if (selected == true)
             {
                 buttonAnimation.scale = 1.2f;
-                buttonAnimation.color = Color.Green;
+                buttonAnimation.color = Color.Blue;
             }
             else
             {
